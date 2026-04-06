@@ -1,0 +1,358 @@
+# ══════════════════════════════════════════════════════════════
+#  Finance Backend (MongoDB) — API Test File
+#  Use with VS Code "REST Client" extension (humao.rest-client)
+#  Install: Ctrl+Shift+X → search "REST Client" → Install
+#
+#  USAGE:
+#    1. Start the server: npm start
+#    2. Click "Send Request" on the Login block below
+#    3. Copy the token from the response panel
+#    4. Paste it next to @token = below
+#    5. Click "Send Request" on any other block to test it
+# ══════════════════════════════════════════════════════════════
+
+@base = http://localhost:3000
+
+# ── Paste your token here after logging in ──
+@token = PASTE_TOKEN_HERE
+
+
+# ─────────────────────────────────────────────
+#  HEALTH CHECK
+# ─────────────────────────────────────────────
+
+### Health Check (no auth needed)
+GET {{base}}/health
+
+
+# ─────────────────────────────────────────────
+#  AUTHENTICATION
+# ─────────────────────────────────────────────
+
+### ① Login as Admin  ← Run this first, copy the token
+POST {{base}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@finance.dev",
+  "password": "Admin@1234"
+}
+
+###
+
+### Login as Analyst
+POST {{base}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "analyst@finance.dev",
+  "password": "Analyst@1234"
+}
+
+###
+
+### Login as Viewer
+POST {{base}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "viewer@finance.dev",
+  "password": "Viewer@1234"
+}
+
+###
+
+### Get My Profile
+GET {{base}}/api/auth/me
+Authorization: Bearer {{token}}
+
+###
+
+### Register a new viewer (public — no token needed)
+POST {{base}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "New Viewer",
+  "email": "newuser@example.com",
+  "password": "NewUser@1234"
+}
+
+
+# ─────────────────────────────────────────────
+#  DASHBOARD ANALYTICS
+# ─────────────────────────────────────────────
+
+### Summary — total income, expenses, net balance (viewer+)
+GET {{base}}/api/dashboard/summary
+Authorization: Bearer {{token}}
+
+###
+
+### Recent Activity — last 10 records (viewer+)
+GET {{base}}/api/dashboard/recent?limit=10
+Authorization: Bearer {{token}}
+
+###
+
+### Category Breakdown — income + expense totals per category (analyst+)
+GET {{base}}/api/dashboard/categories
+Authorization: Bearer {{token}}
+
+###
+
+### Monthly Trends — current year (analyst+)
+GET {{base}}/api/dashboard/trends/monthly
+Authorization: Bearer {{token}}
+
+###
+
+### Monthly Trends — specific year (analyst+)
+GET {{base}}/api/dashboard/trends/monthly?year=2025
+Authorization: Bearer {{token}}
+
+###
+
+### Weekly Trends — last 12 weeks (analyst+)
+GET {{base}}/api/dashboard/trends/weekly
+Authorization: Bearer {{token}}
+
+###
+
+### Top 5 Expense Categories (analyst+)
+GET {{base}}/api/dashboard/top-categories?type=expense&limit=5
+Authorization: Bearer {{token}}
+
+###
+
+### Top 5 Income Categories (analyst+)
+GET {{base}}/api/dashboard/top-categories?type=income&limit=5
+Authorization: Bearer {{token}}
+
+###
+
+### Audit Logs — paginated (admin only)
+GET {{base}}/api/dashboard/audit-logs?page=1&limit=20
+Authorization: Bearer {{token}}
+
+
+# ─────────────────────────────────────────────
+#  FINANCIAL RECORDS
+# ─────────────────────────────────────────────
+
+### List all records — paginated (viewer+)
+GET {{base}}/api/records?page=1&limit=10
+Authorization: Bearer {{token}}
+
+###
+
+### Filter by type: expense only
+GET {{base}}/api/records?type=expense&page=1&limit=10
+Authorization: Bearer {{token}}
+
+###
+
+### Filter by type: income only
+GET {{base}}/api/records?type=income
+Authorization: Bearer {{token}}
+
+###
+
+### Filter by date range
+GET {{base}}/api/records?start_date=2026-01-01&end_date=2026-03-31
+Authorization: Bearer {{token}}
+
+###
+
+### Filter by category (partial match)
+GET {{base}}/api/records?category=salary
+Authorization: Bearer {{token}}
+
+###
+
+### Free-text search (searches category + notes)
+GET {{base}}/api/records?search=rent
+Authorization: Bearer {{token}}
+
+###
+
+### Combined filters + pagination
+GET {{base}}/api/records?type=expense&search=office&page=1&limit=5
+Authorization: Bearer {{token}}
+
+###
+
+### Get single record by ID  (replace ID with a real MongoDB ObjectId from list above)
+GET {{base}}/api/records/REPLACE_WITH_RECORD_ID
+Authorization: Bearer {{token}}
+
+###
+
+### Create an income record (analyst+)
+POST {{base}}/api/records
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "amount": 45000,
+  "type": "income",
+  "category": "Freelance",
+  "date": "2026-04-01",
+  "notes": "Website redesign project for client"
+}
+
+###
+
+### Create an expense record (analyst+)
+POST {{base}}/api/records
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "amount": 3200,
+  "type": "expense",
+  "category": "Software",
+  "date": "2026-04-05",
+  "notes": "Annual IDE and tooling subscriptions"
+}
+
+###
+
+### Update a record (analyst+ — replace ID)
+PUT {{base}}/api/records/REPLACE_WITH_RECORD_ID
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "amount": 90000,
+  "notes": "Updated after salary revision"
+}
+
+###
+
+### Soft-delete a record (analyst+ — replace ID)
+DELETE {{base}}/api/records/REPLACE_WITH_RECORD_ID
+Authorization: Bearer {{token}}
+
+
+# ─────────────────────────────────────────────
+#  USER MANAGEMENT  (admin only)
+# ─────────────────────────────────────────────
+
+### List all users — paginated
+GET {{base}}/api/users?page=1&limit=20
+Authorization: Bearer {{token}}
+
+###
+
+### Get user by ID  (replace ID)
+GET {{base}}/api/users/REPLACE_WITH_USER_ID
+Authorization: Bearer {{token}}
+
+###
+
+### Create a new analyst user
+POST {{base}}/api/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Bob Analyst",
+  "email": "bob@finance.dev",
+  "password": "BobSecure@1234",
+  "role": "analyst"
+}
+
+###
+
+### Update user (replace ID)
+PUT {{base}}/api/users/REPLACE_WITH_USER_ID
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Bob Senior Analyst",
+  "role": "analyst"
+}
+
+###
+
+### Deactivate a user (replace ID)
+PATCH {{base}}/api/users/REPLACE_WITH_USER_ID/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "inactive"
+}
+
+###
+
+### Reactivate a user (replace ID)
+PATCH {{base}}/api/users/REPLACE_WITH_USER_ID/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "active"
+}
+
+###
+
+### Hard-delete a user (replace ID)
+DELETE {{base}}/api/users/REPLACE_WITH_USER_ID
+Authorization: Bearer {{token}}
+
+
+# ─────────────────────────────────────────────
+#  ERROR / EDGE CASE TESTING
+# ─────────────────────────────────────────────
+
+### Should return 401 — no token provided
+GET {{base}}/api/records
+
+###
+
+### Should return 403 — viewer cannot create records
+# (Login as viewer first and use that token)
+POST {{base}}/api/records
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "amount": 100,
+  "type": "income",
+  "category": "Test",
+  "date": "2026-04-01"
+}
+
+###
+
+### Should return 422 — invalid email format
+POST {{base}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "not-an-email",
+  "password": ""
+}
+
+###
+
+### Should return 422 — negative amount
+POST {{base}}/api/records
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "amount": -500,
+  "type": "bad_type",
+  "category": "",
+  "date": "not-a-date"
+}
+
+###
+
+### Should return 404 — record not found
+GET {{base}}/api/records/000000000000000000000000
+Authorization: Bearer {{token}}
