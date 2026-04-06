@@ -221,7 +221,7 @@ Admin uses the Bearer token in the `Authorization` header to successfully fetch 
 
 ### 🚫 3. Viewer Blocked — 403 Forbidden
 
-![RBAC Forbidden](Screenshots/Screenshot 2026-04-06 153859.png)
+![RBAC Forbidden](Screenshots/Screenshot%202026-04-06%20153859.png)
 
 A Viewer tries to create a record — the system correctly **blocks the request** with `403 Forbidden` and explains the role requirement.
 
