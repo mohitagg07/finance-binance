@@ -205,7 +205,7 @@ If a **Viewer** tries to create a record, the API responds:
 
 ### 🔑 1. Login — JWT Token Generated Successfully
 
-![Login Success](screenshots/login-success.png)
+![Login Success](Screenshots/Screenshot%202026-04-06%20151901.png)
 
 Admin logs in and receives a JWT token, which is used for all subsequent authenticated requests.
 
@@ -213,7 +213,7 @@ Admin logs in and receives a JWT token, which is used for all subsequent authent
 
 ### 📄 2. Fetch Records — Authorized Access (200 OK)
 
-![Get Records](screenshots/get-records.png)
+![Get Records](Screenshots/Screenshot%202026-04-06%20152502.png))
 
 Admin uses the Bearer token in the `Authorization` header to successfully fetch all financial records.
 
@@ -221,7 +221,7 @@ Admin uses the Bearer token in the `Authorization` header to successfully fetch 
 
 ### 🚫 3. Viewer Blocked — 403 Forbidden
 
-![RBAC Forbidden](screenshots/rbac-forbidden.png)
+![RBAC Forbidden](Screenshots/Screenshot 2026-04-06 153859.png)
 
 A Viewer tries to create a record — the system correctly **blocks the request** with `403 Forbidden` and explains the role requirement.
 
